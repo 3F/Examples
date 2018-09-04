@@ -1,0 +1,11 @@
+ipch
+.vs
+*.sdf
+*.opensdf
+*.opendb
+*.vcxproj.user
+*.suo
+bin
+Debug
+Release
+packages

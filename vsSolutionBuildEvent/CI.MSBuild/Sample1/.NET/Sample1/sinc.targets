@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="$(SolutionDir)\Sample1\stasks.targets" />
+  <Target Name="Requirements" BeforeTargets="Build;Rebuild;Clean">  
+    <GetEnvVariable Name="vssbePass">
+        <Output PropertyName="vssbePass" TaskParameter="Value" />
+    </GetEnvVariable>
+      
+    <Error Condition="'$(vssbePass)'!='12'" 
+            HelpKeyword="vsSolutionBuildEvent" 
+            Text="This example requires a 'vsSolutionBuildEvent' plugin. Or! use 'build_*.bat' files instead. You can get it here: http://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/    Or here: http://vssbe.r-eg.net" />    
+  </Target>
+  
+</Project>

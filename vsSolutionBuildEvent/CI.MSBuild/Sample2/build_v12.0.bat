@@ -1,0 +1,2 @@
+"C:\Program Files (x86)\MSBuild\12.0\bin\msbuild.exe" gnt.core /p:ngconfig=".nuget/packages.config"
+"C:\Program Files (x86)\MSBuild\12.0\bin\msbuild.exe" "Sample2.sln" /verbosity:normal  /l:"packages\vsSBE.CI.MSBuild.1.6.1207\bin\CI.MSBuild.dll" /m:12 /t:Rebuild /p:Configuration=Debug

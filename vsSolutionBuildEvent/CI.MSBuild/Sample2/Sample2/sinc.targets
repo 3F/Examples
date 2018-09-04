@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="Requirements" BeforeTargets="Build;Rebuild;Clean">
+    <Error Condition="'$(vsSolutionBuildEvent)'==''" 
+            HelpKeyword="vsSolutionBuildEvent" 
+            Text="This example requires 'vsSolutionBuildEvent' v0.12.7+ Or! use 'build_*.bat' files instead. You can get it here: https://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/   | Or here: http://vssbe.r-eg.net" />    
+  </Target>
+
+</Project>

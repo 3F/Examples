@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <TaskCoreDllPath Condition="Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</TaskCoreDllPath>
+    <TaskCoreDllPath Condition="'$(TaskCoreDllPath)' == '' and Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</TaskCoreDllPath>
+  </PropertyGroup>
+
+    <UsingTask
+        TaskName="GetEnvVariable"
+        TaskFactory="CodeTaskFactory"
+        AssemblyFile="$(TaskCoreDllPath)">
+
+        <ParameterGroup>
+            <Name ParameterType="System.String" Required="true" />
+            <Value ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+
+        <Task>
+            <Using Namespace="System" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                    Value = Environment.GetEnvironmentVariable(Name, EnvironmentVariableTarget.User);
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+    
+    <UsingTask
+        TaskName="SetEnvVariable"
+        TaskFactory="CodeTaskFactory"
+        AssemblyFile="$(TaskCoreDllPath)">
+     
+        <ParameterGroup>
+            <Name ParameterType="System.String" Required="true" />
+            <Value ParameterType="System.String" />
+            <IsEmpty ParameterType="System.Boolean" />
+        </ParameterGroup>
+     
+        <Task>
+            <Using Namespace="System" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                    if(IsEmpty){
+                        Value = String.Empty;
+                    }
+                    Environment.SetEnvironmentVariable(Name, Value, EnvironmentVariableTarget.User);
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+  
+</Project>

@@ -1,0 +1,587 @@
+﻿{
+  "Header": {
+    "_": [
+      " Current file requires a vsSolutionBuildEvent engine.",
+      " Free plugin for Visual Studio or MSBuild Tools:",
+      "  * http://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/",
+      "  * http://vssbe.r-eg.net",
+      " Feedback: entry.reg@gmail.com"
+    ],
+    "Compatibility": "0.9"
+  },
+  "Components": [
+    {
+      "ClassName": "InternalComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "UserVariableComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "OWPComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "NuGetComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "FunctionComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "FileComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "DTEComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "BuildComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "SevenZipComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "ConditionComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "MSBuildComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "CommentComponent",
+      "Enabled": true
+    }
+  ],
+  "PreBuild": [
+    {
+      "Enabled": true,
+      "Name": "passReg",
+      "Caption": "Passing with reg",
+      "SupportMSBuild": false,
+      "SupportSBEScripts": false,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeFile, vsSolutionBuildEvent",
+        "Type": "File",
+        "Command": "reg ADD HKCU\\Environment /v vssbePass /t REG_SZ /d 12 /f",
+        "Command__": [
+          "reg ADD HKCU\\Environment /v vssbePass /t REG_SZ /d 12 /f"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "PrepareOrder",
+      "Caption": "Calculate order",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeCSharp, vsSolutionBuildEvent",
+        "Type": "CSharp",
+        "References": [
+          "System.dll"
+        ],
+        "SmartReferences": true,
+        "GenerateInMemory": false,
+        "OutputPath": "cache",
+        "TreatWarningsAsErrors": false,
+        "WarningLevel": 4,
+        "FilesMode": false,
+        "CachingBytecode": false,
+        "LastTime": 0,
+        "Command": "using System;\r\nusing System.Collections.Generic;\r\nusing System.IO;\r\nusing System.Text;\r\nusing System.Text.RegularExpressions;\r\nusing ICommand = net.r_eg.vsSBE.Actions.ICommand;\r\nusing ISolutionEvent = net.r_eg.vsSBE.Events.ISolutionEvent;\r\n\r\nnamespace vsSolutionBuildEvent\r\n{\r\n    public class CSharpMode\r\n    {\r\n        /// <summary>\r\n        /// based on https://gist.github.com/3F/a77129e3978841241927\r\n        /// </summary>\r\n        private class ProjectsMap\r\n        {\r\n            protected List<string> order = new List<string>();            \r\n            protected Dictionary<string, Project> projects = new Dictionary<string, Project>();\r\n            \r\n            public Project getLast()\r\n            {\r\n                if(order.Count < 1) {\r\n                    return new Project() { name = \"The Last project is Undefined\", path = \"?\" };\r\n                }\r\n                return projects[order[order.Count - 1]];\r\n            }\r\n            \r\n            public Project getFirst()\r\n            {\r\n                if(order.Count < 1) {\r\n                    return new Project() { name = \"The First project is Undefined\", path = \"?\" };\r\n                }\r\n                return projects[order[0]];\r\n            }\r\n            \r\n            /// <param name=\"sln\">Full path to solution</param>\r\n            public ProjectsMap(string sln)\r\n            {\r\n                Regex rProject  = new Regex(\"^Project\\\\(\\\"(?<TypeGuid>.*)\\\"\\\\)\\\\s*=\\\\s*\\\"(?<Name>.*)\\\"\\\\s*,\\\\s*\\\"(?<Path>.*)\\\"\\\\s*,\\\\s*\\\"(?<Guid>.*)\\\"$\");\r\n                Regex rProperty = new Regex(\"^(?<PName>[^=]*)\\\\s*=\\\\s*(?<PValue>[^=]*)$\");\r\n\r\n                Dictionary<string, List<string>> map = new Dictionary<string, List<string>>();\r\n                using(StreamReader reader = new StreamReader(sln, Encoding.Default))\r\n                {\r\n                    string line;\r\n                    while((line = reader.ReadLine()) != null)\r\n                    {\r\n                        line = line.Trim();\r\n                        if(!line.StartsWith(\"Project(\", StringComparison.Ordinal)) {\r\n                            continue;\r\n                        }\r\n                        Match m = rProject.Match(line);\r\n                        if(!m.Success) {\r\n                            throw new Exception(\"incorrect line\");\r\n                        }\r\n                        if(String.Equals(\"{2150E333-8FDC-42A3-9474-1A3956D46DE8}\", m.Groups[\"TypeGuid\"].Value.Trim(), StringComparison.OrdinalIgnoreCase)) {\r\n                            continue; //SolutionFolder\r\n                        }\r\n\r\n                        string pGuid    = m.Groups[\"Guid\"].Value.Trim();\r\n                        projects[pGuid] = new Project() { name = m.Groups[\"Name\"].Value, path = m.Groups[\"Path\"].Value };\r\n\r\n                        map[pGuid] = new List<string>();\r\n                        while((line = reader.ReadLine()) != null && (line != \"EndProject\"))\r\n                        {\r\n                            line = line.Trim();\r\n                            if(line.StartsWith(\"ProjectSection(ProjectDependencies)\", StringComparison.Ordinal))\r\n                            {\r\n                                for(line = reader.ReadLine(); line != null; line = reader.ReadLine())\r\n                                {\r\n                                    line = line.Trim();\r\n                                    if(line.StartsWith(\"EndProjectSection\", StringComparison.Ordinal)) {\r\n                                        break;\r\n                                    }\r\n                                    map[pGuid].Add(rProperty.Match(line).Groups[\"PName\"].Value.Trim());\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n\r\n                // Build order\r\n                Func<string, bool> h = null;\r\n                h = delegate(string id)\r\n                {\r\n                    map[id].ForEach(dep => h(dep));\r\n                    if(!order.Contains(id)) {\r\n                        order.Add(id);\r\n                    }\r\n                    return true;\r\n                };\r\n\r\n                foreach(KeyValuePair<string, List<string>> project in map)\r\n                {\r\n                    h(project.Key);\r\n                    if(!order.Contains(project.Key)) {\r\n                        order.Add(project.Key);\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n        private struct Project\r\n        {\r\n            public string name;\r\n            public string path;\r\n        }\r\n        \r\n        public static int Init(ICommand cmd, ISolutionEvent evt)\r\n        {\r\n            ProjectsMap map = new ProjectsMap(@\"$(SolutionPath)\");\r\n            \r\n            // it should be in reverse order for 'Clean' type\r\n            \r\n            string data = @\"\r\n            \r\n                #[( #[Build type] != Clean )\r\n                {{\r\n                    #[var firstProject = {0}] #[var lastProject = {1}]\r\n                }}\r\n                else {{\r\n                    #[var firstProject = {1}] #[var lastProject = {0}]\r\n                }}]\r\n            \r\n            \";\r\n            \r\n            cmd.SBEScript.parse(String.Format(data, map.getFirst().name, map.getLast().name));\r\n            return 0;\r\n        }\r\n    }\r\n}",
+        "Command__": [
+          "using System;",
+          "using System.Collections.Generic;",
+          "using System.IO;",
+          "using System.Text;",
+          "using System.Text.RegularExpressions;",
+          "using ICommand = net.r_eg.vsSBE.Actions.ICommand;",
+          "using ISolutionEvent = net.r_eg.vsSBE.Events.ISolutionEvent;",
+          "",
+          "namespace vsSolutionBuildEvent",
+          "{",
+          "    public class CSharpMode",
+          "    {",
+          "        /// <summary>",
+          "        /// based on https://gist.github.com/3F/a77129e3978841241927",
+          "        /// </summary>",
+          "        private class ProjectsMap",
+          "        {",
+          "            protected List<string> order = new List<string>();            ",
+          "            protected Dictionary<string, Project> projects = new Dictionary<string, Project>();",
+          "            ",
+          "            public Project getLast()",
+          "            {",
+          "                if(order.Count < 1) {",
+          "                    return new Project() { name = \"The Last project is Undefined\", path = \"?\" };",
+          "                }",
+          "                return projects[order[order.Count - 1]];",
+          "            }",
+          "            ",
+          "            public Project getFirst()",
+          "            {",
+          "                if(order.Count < 1) {",
+          "                    return new Project() { name = \"The First project is Undefined\", path = \"?\" };",
+          "                }",
+          "                return projects[order[0]];",
+          "            }",
+          "            ",
+          "            /// <param name=\"sln\">Full path to solution</param>",
+          "            public ProjectsMap(string sln)",
+          "            {",
+          "                Regex rProject  = new Regex(\"^Project\\\\(\\\"(?<TypeGuid>.*)\\\"\\\\)\\\\s*=\\\\s*\\\"(?<Name>.*)\\\"\\\\s*,\\\\s*\\\"(?<Path>.*)\\\"\\\\s*,\\\\s*\\\"(?<Guid>.*)\\\"$\");",
+          "                Regex rProperty = new Regex(\"^(?<PName>[^=]*)\\\\s*=\\\\s*(?<PValue>[^=]*)$\");",
+          "",
+          "                Dictionary<string, List<string>> map = new Dictionary<string, List<string>>();",
+          "                using(StreamReader reader = new StreamReader(sln, Encoding.Default))",
+          "                {",
+          "                    string line;",
+          "                    while((line = reader.ReadLine()) != null)",
+          "                    {",
+          "                        line = line.Trim();",
+          "                        if(!line.StartsWith(\"Project(\", StringComparison.Ordinal)) {",
+          "                            continue;",
+          "                        }",
+          "                        Match m = rProject.Match(line);",
+          "                        if(!m.Success) {",
+          "                            throw new Exception(\"incorrect line\");",
+          "                        }",
+          "                        if(String.Equals(\"{2150E333-8FDC-42A3-9474-1A3956D46DE8}\", m.Groups[\"TypeGuid\"].Value.Trim(), StringComparison.OrdinalIgnoreCase)) {",
+          "                            continue; //SolutionFolder",
+          "                        }",
+          "",
+          "                        string pGuid    = m.Groups[\"Guid\"].Value.Trim();",
+          "                        projects[pGuid] = new Project() { name = m.Groups[\"Name\"].Value, path = m.Groups[\"Path\"].Value };",
+          "",
+          "                        map[pGuid] = new List<string>();",
+          "                        while((line = reader.ReadLine()) != null && (line != \"EndProject\"))",
+          "                        {",
+          "                            line = line.Trim();",
+          "                            if(line.StartsWith(\"ProjectSection(ProjectDependencies)\", StringComparison.Ordinal))",
+          "                            {",
+          "                                for(line = reader.ReadLine(); line != null; line = reader.ReadLine())",
+          "                                {",
+          "                                    line = line.Trim();",
+          "                                    if(line.StartsWith(\"EndProjectSection\", StringComparison.Ordinal)) {",
+          "                                        break;",
+          "                                    }",
+          "                                    map[pGuid].Add(rProperty.Match(line).Groups[\"PName\"].Value.Trim());",
+          "                                }",
+          "                            }",
+          "                        }",
+          "                    }",
+          "                }",
+          "",
+          "                // Build order",
+          "                Func<string, bool> h = null;",
+          "                h = delegate(string id)",
+          "                {",
+          "                    map[id].ForEach(dep => h(dep));",
+          "                    if(!order.Contains(id)) {",
+          "                        order.Add(id);",
+          "                    }",
+          "                    return true;",
+          "                };",
+          "",
+          "                foreach(KeyValuePair<string, List<string>> project in map)",
+          "                {",
+          "                    h(project.Key);",
+          "                    if(!order.Contains(project.Key)) {",
+          "                        order.Add(project.Key);",
+          "                    }",
+          "                }",
+          "            }",
+          "        }",
+          "",
+          "        private struct Project",
+          "        {",
+          "            public string name;",
+          "            public string path;",
+          "        }",
+          "        ",
+          "        public static int Init(ICommand cmd, ISolutionEvent evt)",
+          "        {",
+          "            ProjectsMap map = new ProjectsMap(@\"$(SolutionPath)\");",
+          "            ",
+          "            // it should be in reverse order for 'Clean' type",
+          "            ",
+          "            string data = @\"",
+          "            ",
+          "                #[( #[Build type] != Clean )",
+          "                {{",
+          "                    #[var firstProject = {0}] #[var lastProject = {1}]",
+          "                }}",
+          "                else {{",
+          "                    #[var firstProject = {1}] #[var lastProject = {0}]",
+          "                }}]",
+          "            ",
+          "            \";",
+          "            ",
+          "            cmd.SBEScript.parse(String.Format(data, map.getFirst().name, map.getLast().name));",
+          "            return 0;",
+          "        }",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActCaption",
+      "Caption": "test Pre-Build with IO",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[IO write(\"result.log\"):] #[\" to avoid prev. content \"]\r\n\r\n#[var raw = \r\n    I'm the action in 'Script Mode' for Pre-#[Build type] Event :: \r\n    I started Before #[Build type] - '$(firstProject)' (btw, StartUp project - '$(ProjectName)').\r\n]\r\n#[var raw = $(raw.Replace(\"\\r\", \"\").Replace(\"\\n\", \"\").Replace(\"    \", \"\"))]\r\n\r\n#[IO appendLine(\"result.log\"): - #[var raw]]",
+        "Command__": [
+          "#[IO write(\"result.log\"):] #[\" to avoid prev. content \"]",
+          "",
+          "#[var raw = ",
+          "    I'm the action in 'Script Mode' for Pre-#[Build type] Event :: ",
+          "    I started Before #[Build type] - '$(firstProject)' (btw, StartUp project - '$(ProjectName)').",
+          "]",
+          "#[var raw = $(raw.Replace(\"\\r\", \"\").Replace(\"\\n\", \"\").Replace(\"    \", \"\"))]",
+          "",
+          "#[IO appendLine(\"result.log\"): - #[var raw]]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActEcho",
+      "Caption": "test Interpreter Mode",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 15
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeInterpreter, vsSolutionBuildEvent",
+        "Type": "Interpreter",
+        "Handler": "cmd.exe /C",
+        "Newline": "",
+        "Wrapper": "",
+        "Command": "echo  - I'm very simple action in 'Interpreter Mode' :: I also started Before - '$(firstProject)'. >> result.log",
+        "Command__": [
+          "echo  - I'm very simple action in 'Interpreter Mode' :: I also started Before - '$(firstProject)'. >> result.log"
+        ]
+      }
+    },
+    {
+      "Enabled": false,
+      "Name": "pass",
+      "Caption": "Passing with C#",
+      "SupportMSBuild": false,
+      "SupportSBEScripts": false,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeCSharp, vsSolutionBuildEvent",
+        "Type": "CSharp",
+        "References": [
+          "System.dll"
+        ],
+        "SmartReferences": true,
+        "GenerateInMemory": false,
+        "OutputPath": "cache",
+        "TreatWarningsAsErrors": false,
+        "WarningLevel": 4,
+        "FilesMode": false,
+        "CachingBytecode": true,
+        "LastTime": 0,
+        "Command": "namespace vsSolutionBuildEvent\r\n{\r\n    public class CSharpMode\r\n    {\r\n        public static int Init(object cmd, object evt)\r\n        {\r\n            System.Environment.SetEnvironmentVariable(\"vssbePass\", \"12\", System.EnvironmentVariableTarget.User);\r\n            return 0;\r\n        }\r\n    }\r\n}",
+        "Command__": [
+          "namespace vsSolutionBuildEvent",
+          "{",
+          "    public class CSharpMode",
+          "    {",
+          "        public static int Init(object cmd, object evt)",
+          "        {",
+          "            System.Environment.SetEnvironmentVariable(\"vssbePass\", \"12\", System.EnvironmentVariableTarget.User);",
+          "            return 0;",
+          "        }",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "Enabled": false,
+      "Name": "passTargets",
+      "Caption": "Passing with Targets",
+      "SupportMSBuild": false,
+      "SupportSBEScripts": false,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeTargets, vsSolutionBuildEvent",
+        "Type": "Targets",
+        "Command": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Project DefaultTargets=\"Rebuild\" ToolsVersion=\"12.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n    \r\n    <Import Project=\"$(SolutionDir)\\Sample1\\stasks.targets\" />    \r\n    <Target Name=\"_pass\">\r\n        <SetEnvVariable Name=\"vssbePass\" Value=\"12\" />\r\n    </Target>\r\n    \r\n    <Target Name=\"Build\" DependsOnTargets=\"_pass\" />\r\n    <Target Name=\"Rebuild\" DependsOnTargets=\"_pass\" />\r\n    <Target Name=\"Clean\" DependsOnTargets=\"_pass\" />  \r\n\r\n</Project>",
+        "Command__": [
+          "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "<Project DefaultTargets=\"Rebuild\" ToolsVersion=\"12.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">",
+          "    ",
+          "    <Import Project=\"$(SolutionDir)\\Sample1\\stasks.targets\" />    ",
+          "    <Target Name=\"_pass\">",
+          "        <SetEnvVariable Name=\"vssbePass\" Value=\"12\" />",
+          "    </Target>",
+          "    ",
+          "    <Target Name=\"Build\" DependsOnTargets=\"_pass\" />",
+          "    <Target Name=\"Rebuild\" DependsOnTargets=\"_pass\" />",
+          "    <Target Name=\"Clean\" DependsOnTargets=\"_pass\" />  ",
+          "",
+          "</Project>"
+        ]
+      }
+    }
+  ],
+  "PostBuild": [
+    {
+      "Enabled": true,
+      "Name": "ActCaption",
+      "Caption": "test Post-Build Event",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var raw = \r\n    I'm the action in 'Script Mode' for Post-#[Build type] Event :: \r\n    I started After #[Build type] the all projects. I mean after '$(lastProject)'!\r\n]\r\n#[var raw = $(raw.Replace(\"\\r\", \"\").Replace(\"\\n\", \"\").Replace(\"    \", \"\"))]\r\n#[IO appendLine(\"result.log\"): - #[var raw]]",
+        "Command__": [
+          "#[var raw = ",
+          "    I'm the action in 'Script Mode' for Post-#[Build type] Event :: ",
+          "    I started After #[Build type] the all projects. I mean after '$(lastProject)'!",
+          "]",
+          "#[var raw = $(raw.Replace(\"\\r\", \"\").Replace(\"\\n\", \"\").Replace(\"    \", \"\"))]",
+          "#[IO appendLine(\"result.log\"): - #[var raw]]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "NoErr",
+      "Caption": "I'm the action without error",
+      "SupportMSBuild": false,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": true,
+      "ToConfiguration": [
+        "Debug|Win32"
+      ],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[( #[Build type] == \"Build\" || #[Build type] == \"Rebuild\" )\r\n{\r\n    #[IO appendLine(\"result.log\"): - I only for Build/Rebuild operations and I'm working only if I can't see any errors with your build.]\r\n}]",
+        "Command__": [
+          "#[( #[Build type] == \"Build\" || #[Build type] == \"Rebuild\" )",
+          "{",
+          "    #[IO appendLine(\"result.log\"): - I only for Build/Rebuild operations and I'm working only if I can't see any errors with your build.]",
+          "}]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActLog",
+      "Caption": "show log: stdout + with UI notepad /waiting 180sec",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[( $(Configuration) == \"Debug\" ) {\r\n    #[IO scall(\"notepad\", \"result.log\", 180)]\r\n}]\r\n\r\n#[\"\r\n    print to stdout\r\n\"]\r\n#[var rheader = $([System.String]::Format(\"\\n[result.log:]\\n\"))]\r\n#[IO writeLine(STDOUT):#[var rheader]]\r\n#[IO writeLine(STDOUT):#[IO get(\"result.log\")]]\r\n#[IO writeLine(STDOUT): ]\r\n\r\n#[\"\r\n    clean of the passing\r\n\"]\r\n#[IO cmd(\"reg DELETE HKCU\\Environment /v vssbePass /f\")]",
+        "Command__": [
+          "#[( $(Configuration) == \"Debug\" ) {",
+          "    #[IO scall(\"notepad\", \"result.log\", 180)]",
+          "}]",
+          "",
+          "#[\"",
+          "    print to stdout",
+          "\"]",
+          "#[var rheader = $([System.String]::Format(\"\\n[result.log:]\\n\"))]",
+          "#[IO writeLine(STDOUT):#[var rheader]]",
+          "#[IO writeLine(STDOUT):#[IO get(\"result.log\")]]",
+          "#[IO writeLine(STDOUT): ]",
+          "",
+          "#[\"",
+          "    clean of the passing",
+          "\"]",
+          "#[IO cmd(\"reg DELETE HKCU\\Environment /v vssbePass /f\")]"
+        ]
+      }
+    }
+  ],
+  "CancelBuild": [],
+  "WarningsBuild": [],
+  "ErrorsBuild": [],
+  "OWPBuild": [
+    {
+      "Match": {
+        "$type": "net.r_eg.vsSBE.MatchWords[], vsSolutionBuildEvent",
+        "$values": [
+          {
+            "$type": "net.r_eg.vsSBE.MatchWords, vsSolutionBuildEvent",
+            "Condition": "*Project:*",
+            "Type": "Wildcards"
+          }
+        ]
+      },
+      "Enabled": false,
+      "Name": "Act1",
+      "Caption": "calc lastProject",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var lastProject = $(ProjectName)]",
+        "Command__": [
+          "#[var lastProject = $(ProjectName)]"
+        ]
+      }
+    }
+  ],
+  "Transmitter": [],
+  "CommandEvent": [],
+  "Logging": [],
+  "SlnOpened": [],
+  "SlnClosed": []
+}

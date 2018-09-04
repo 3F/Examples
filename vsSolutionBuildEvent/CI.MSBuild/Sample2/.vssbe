@@ -1,0 +1,648 @@
+﻿{
+  "Header": {
+    "_": [
+      " Current file requires a vsSolutionBuildEvent engine.",
+      " Free plugin for Visual Studio or MSBuild Tools:",
+      "  * http://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/",
+      "  * http://vssbe.r-eg.net",
+      " Feedback: entry.reg@gmail.com"
+    ],
+    "Compatibility": "0.9"
+  },
+  "Components": [
+    {
+      "ClassName": "InternalComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "UserVariableComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "OWPComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "NuGetComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "FunctionComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "FileComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "DTEComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "BuildComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "SevenZipComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "ConditionComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "MSBuildComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "CommentComponent",
+      "Enabled": true
+    }
+  ],
+  "PreBuild": [
+    {
+      "Enabled": true,
+      "Name": "restorePkg",
+      "Caption": "To restore packages - nuget etc.",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[\" \n    To restore packages via GetNuTool\n    It's important for packages of solution-level in VS2015\n    https://github.com/NuGet/Home/issues/522\n\"]\n#[($([System.Convert]::ToInt32(\"$(VisualStudioVersion.Replace('.', ''))\")) >= 140)\n{\n    #[NuGet gnt.raw(\"/p:ngconfig=\\\".nuget/packages.config\\\"\")]\n}]",
+        "Command__": [
+          "#[\" ",
+          "    To restore packages via GetNuTool",
+          "    It's important for packages of solution-level in VS2015",
+          "    https://github.com/NuGet/Home/issues/522",
+          "\"]",
+          "#[($([System.Convert]::ToInt32(\"$(VisualStudioVersion.Replace('.', ''))\")) >= 140)",
+          "{",
+          "    #[NuGet gnt.raw(\"/p:ngconfig=\\\".nuget/packages.config\\\"\")]",
+          "}]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "uLabel",
+      "Caption": "Unique label",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[\" we can also use sha1 from git scm etc.\"]\r\n#[var sha1 = #[Func hash.SHA1(\"$([System.Guid]::NewGuid())\")]]\r\n\r\n$(dt        = $([System.DateTime]::UtcNow.ToString(\"yyyy.MM.dd_HH;mm;ss.ffff\")))\r\n$(flabel    = $([System.String]::Format(\"{0}_[{1}]\", $(dt), $(sha1.Substring(0, 7)))))",
+        "Command__": [
+          "#[\" we can also use sha1 from git scm etc.\"]",
+          "#[var sha1 = #[Func hash.SHA1(\"$([System.Guid]::NewGuid())\")]]",
+          "",
+          "$(dt        = $([System.DateTime]::UtcNow.ToString(\"yyyy.MM.dd_HH;mm;ss.ffff\")))",
+          "$(flabel    = $([System.String]::Format(\"{0}_[{1}]\", $(dt), $(sha1.Substring(0, 7)))))"
+        ]
+      }
+    },
+    {
+      "Enabled": false,
+      "Name": "PrepareOrder",
+      "Caption": "Calculate order",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeCSharp, vsSolutionBuildEvent",
+        "Type": "CSharp",
+        "References": [
+          "System.dll"
+        ],
+        "SmartReferences": true,
+        "GenerateInMemory": false,
+        "OutputPath": "cache",
+        "TreatWarningsAsErrors": false,
+        "WarningLevel": 4,
+        "FilesMode": false,
+        "CachingBytecode": false,
+        "LastTime": 0,
+        "Command": "using System;\nusing System.Collections.Generic;\nusing System.IO;\nusing System.Text;\nusing System.Text.RegularExpressions;\nusing ICommand = net.r_eg.vsSBE.Actions.ICommand;\nusing ISolutionEvent = net.r_eg.vsSBE.Events.ISolutionEvent;\n\nnamespace vsSolutionBuildEvent\n{\n    public class CSharpMode\n    {\n        /// <summary>\n        /// based on https://gist.github.com/3F/a77129e3978841241927\n        /// </summary>\n        private class ProjectsMap\n        {\n            protected List<string> order = new List<string>();            \n            protected Dictionary<string, Project> projects = new Dictionary<string, Project>();\n            \n            public Project getLast()\n            {\n                if(order.Count < 1) {\n                    return new Project() { name = \"The Last project is Undefined\", path = \"?\" };\n                }\n                return projects[order[order.Count - 1]];\n            }\n            \n            public Project getFirst()\n            {\n                if(order.Count < 1) {\n                    return new Project() { name = \"The First project is Undefined\", path = \"?\" };\n                }\n                return projects[order[0]];\n            }\n            \n            /// <param name=\"sln\">Full path to solution</param>\n            public ProjectsMap(string sln)\n            {\n                Regex rProject  = new Regex(\"^Project\\\\(\\\"(?<TypeGuid>.*)\\\"\\\\)\\\\s*=\\\\s*\\\"(?<Name>.*)\\\"\\\\s*,\\\\s*\\\"(?<Path>.*)\\\"\\\\s*,\\\\s*\\\"(?<Guid>.*)\\\"$\");\n                Regex rProperty = new Regex(\"^(?<PName>[^=]*)\\\\s*=\\\\s*(?<PValue>[^=]*)$\");\n\n                Dictionary<string, List<string>> map = new Dictionary<string, List<string>>();\n                using(StreamReader reader = new StreamReader(sln, Encoding.Default))\n                {\n                    string line;\n                    while((line = reader.ReadLine()) != null)\n                    {\n                        line = line.Trim();\n                        if(!line.StartsWith(\"Project(\", StringComparison.Ordinal)) {\n                            continue;\n                        }\n                        Match m = rProject.Match(line);\n                        if(!m.Success) {\n                            throw new Exception(\"incorrect line\");\n                        }\n                        if(String.Equals(\"{2150E333-8FDC-42A3-9474-1A3956D46DE8}\", m.Groups[\"TypeGuid\"].Value.Trim(), StringComparison.OrdinalIgnoreCase)) {\n                            continue; //SolutionFolder\n                        }\n\n                        string pGuid    = m.Groups[\"Guid\"].Value.Trim();\n                        projects[pGuid] = new Project() { name = m.Groups[\"Name\"].Value, path = m.Groups[\"Path\"].Value };\n\n                        map[pGuid] = new List<string>();\n                        while((line = reader.ReadLine()) != null && (line != \"EndProject\"))\n                        {\n                            line = line.Trim();\n                            if(line.StartsWith(\"ProjectSection(ProjectDependencies)\", StringComparison.Ordinal))\n                            {\n                                for(line = reader.ReadLine(); line != null; line = reader.ReadLine())\n                                {\n                                    line = line.Trim();\n                                    if(line.StartsWith(\"EndProjectSection\", StringComparison.Ordinal)) {\n                                        break;\n                                    }\n                                    map[pGuid].Add(rProperty.Match(line).Groups[\"PName\"].Value.Trim());\n                                }\n                            }\n                        }\n                    }\n                }\n\n                // Build order\n                Func<string, bool> h = null;\n                h = delegate(string id)\n                {\n                    map[id].ForEach(dep => h(dep));\n                    if(!order.Contains(id)) {\n                        order.Add(id);\n                    }\n                    return true;\n                };\n\n                foreach(KeyValuePair<string, List<string>> project in map)\n                {\n                    h(project.Key);\n                    if(!order.Contains(project.Key)) {\n                        order.Add(project.Key);\n                    }\n                }\n            }\n        }\n\n        private struct Project\n        {\n            public string name;\n            public string path;\n        }\n        \n        public static int Init(ICommand cmd, ISolutionEvent evt)\n        {\n            ProjectsMap map = new ProjectsMap(@\"$(SolutionPath)\");\n            \n            // it should be in reverse order for 'Clean' type\n            \n            string data = @\"\n            \n                #[( #[Build type] != Clean )\n                {{\n                    #[var firstProject = {0}] #[var lastProject = {1}]\n                }}\n                else {{\n                    #[var firstProject = {1}] #[var lastProject = {0}]\n                }}]\n            \n            \";\n            \n            cmd.SBEScript.parse(String.Format(data, map.getFirst().name, map.getLast().name));\n            return 0;\n        }\n    }\n}",
+        "Command__": [
+          "using System;",
+          "using System.Collections.Generic;",
+          "using System.IO;",
+          "using System.Text;",
+          "using System.Text.RegularExpressions;",
+          "using ICommand = net.r_eg.vsSBE.Actions.ICommand;",
+          "using ISolutionEvent = net.r_eg.vsSBE.Events.ISolutionEvent;",
+          "",
+          "namespace vsSolutionBuildEvent",
+          "{",
+          "    public class CSharpMode",
+          "    {",
+          "        /// <summary>",
+          "        /// based on https://gist.github.com/3F/a77129e3978841241927",
+          "        /// </summary>",
+          "        private class ProjectsMap",
+          "        {",
+          "            protected List<string> order = new List<string>();            ",
+          "            protected Dictionary<string, Project> projects = new Dictionary<string, Project>();",
+          "            ",
+          "            public Project getLast()",
+          "            {",
+          "                if(order.Count < 1) {",
+          "                    return new Project() { name = \"The Last project is Undefined\", path = \"?\" };",
+          "                }",
+          "                return projects[order[order.Count - 1]];",
+          "            }",
+          "            ",
+          "            public Project getFirst()",
+          "            {",
+          "                if(order.Count < 1) {",
+          "                    return new Project() { name = \"The First project is Undefined\", path = \"?\" };",
+          "                }",
+          "                return projects[order[0]];",
+          "            }",
+          "            ",
+          "            /// <param name=\"sln\">Full path to solution</param>",
+          "            public ProjectsMap(string sln)",
+          "            {",
+          "                Regex rProject  = new Regex(\"^Project\\\\(\\\"(?<TypeGuid>.*)\\\"\\\\)\\\\s*=\\\\s*\\\"(?<Name>.*)\\\"\\\\s*,\\\\s*\\\"(?<Path>.*)\\\"\\\\s*,\\\\s*\\\"(?<Guid>.*)\\\"$\");",
+          "                Regex rProperty = new Regex(\"^(?<PName>[^=]*)\\\\s*=\\\\s*(?<PValue>[^=]*)$\");",
+          "",
+          "                Dictionary<string, List<string>> map = new Dictionary<string, List<string>>();",
+          "                using(StreamReader reader = new StreamReader(sln, Encoding.Default))",
+          "                {",
+          "                    string line;",
+          "                    while((line = reader.ReadLine()) != null)",
+          "                    {",
+          "                        line = line.Trim();",
+          "                        if(!line.StartsWith(\"Project(\", StringComparison.Ordinal)) {",
+          "                            continue;",
+          "                        }",
+          "                        Match m = rProject.Match(line);",
+          "                        if(!m.Success) {",
+          "                            throw new Exception(\"incorrect line\");",
+          "                        }",
+          "                        if(String.Equals(\"{2150E333-8FDC-42A3-9474-1A3956D46DE8}\", m.Groups[\"TypeGuid\"].Value.Trim(), StringComparison.OrdinalIgnoreCase)) {",
+          "                            continue; //SolutionFolder",
+          "                        }",
+          "",
+          "                        string pGuid    = m.Groups[\"Guid\"].Value.Trim();",
+          "                        projects[pGuid] = new Project() { name = m.Groups[\"Name\"].Value, path = m.Groups[\"Path\"].Value };",
+          "",
+          "                        map[pGuid] = new List<string>();",
+          "                        while((line = reader.ReadLine()) != null && (line != \"EndProject\"))",
+          "                        {",
+          "                            line = line.Trim();",
+          "                            if(line.StartsWith(\"ProjectSection(ProjectDependencies)\", StringComparison.Ordinal))",
+          "                            {",
+          "                                for(line = reader.ReadLine(); line != null; line = reader.ReadLine())",
+          "                                {",
+          "                                    line = line.Trim();",
+          "                                    if(line.StartsWith(\"EndProjectSection\", StringComparison.Ordinal)) {",
+          "                                        break;",
+          "                                    }",
+          "                                    map[pGuid].Add(rProperty.Match(line).Groups[\"PName\"].Value.Trim());",
+          "                                }",
+          "                            }",
+          "                        }",
+          "                    }",
+          "                }",
+          "",
+          "                // Build order",
+          "                Func<string, bool> h = null;",
+          "                h = delegate(string id)",
+          "                {",
+          "                    map[id].ForEach(dep => h(dep));",
+          "                    if(!order.Contains(id)) {",
+          "                        order.Add(id);",
+          "                    }",
+          "                    return true;",
+          "                };",
+          "",
+          "                foreach(KeyValuePair<string, List<string>> project in map)",
+          "                {",
+          "                    h(project.Key);",
+          "                    if(!order.Contains(project.Key)) {",
+          "                        order.Add(project.Key);",
+          "                    }",
+          "                }",
+          "            }",
+          "        }",
+          "",
+          "        private struct Project",
+          "        {",
+          "            public string name;",
+          "            public string path;",
+          "        }",
+          "        ",
+          "        public static int Init(ICommand cmd, ISolutionEvent evt)",
+          "        {",
+          "            ProjectsMap map = new ProjectsMap(@\"$(SolutionPath)\");",
+          "            ",
+          "            // it should be in reverse order for 'Clean' type",
+          "            ",
+          "            string data = @\"",
+          "            ",
+          "                #[( #[Build type] != Clean )",
+          "                {{",
+          "                    #[var firstProject = {0}] #[var lastProject = {1}]",
+          "                }}",
+          "                else {{",
+          "                    #[var firstProject = {1}] #[var lastProject = {0}]",
+          "                }}]",
+          "            ",
+          "            \";",
+          "            ",
+          "            cmd.SBEScript.parse(String.Format(data, map.getFirst().name, map.getLast().name));",
+          "            return 0;",
+          "        }",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "Enabled": false,
+      "Name": "passTargets",
+      "Caption": "Passing with Targets",
+      "SupportMSBuild": false,
+      "SupportSBEScripts": false,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeTargets, vsSolutionBuildEvent",
+        "Type": "Targets",
+        "Command": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Rebuild\" ToolsVersion=\"12.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n    \n    <Import Project=\"$(SolutionDir)\\Sample2\\stasks.targets\" />    \n    <Target Name=\"_pass\">\n        <SetEnvVariable Name=\"vssbePass\" Value=\"12\" />\n    </Target>\n    \n    <Target Name=\"Build\" DependsOnTargets=\"_pass\" />\n    <Target Name=\"Rebuild\" DependsOnTargets=\"_pass\" />\n    <Target Name=\"Clean\" DependsOnTargets=\"_pass\" />  \n\n</Project>",
+        "Command__": [
+          "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "<Project DefaultTargets=\"Rebuild\" ToolsVersion=\"12.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">",
+          "    ",
+          "    <Import Project=\"$(SolutionDir)\\Sample2\\stasks.targets\" />    ",
+          "    <Target Name=\"_pass\">",
+          "        <SetEnvVariable Name=\"vssbePass\" Value=\"12\" />",
+          "    </Target>",
+          "    ",
+          "    <Target Name=\"Build\" DependsOnTargets=\"_pass\" />",
+          "    <Target Name=\"Rebuild\" DependsOnTargets=\"_pass\" />",
+          "    <Target Name=\"Clean\" DependsOnTargets=\"_pass\" />  ",
+          "",
+          "</Project>"
+        ]
+      }
+    }
+  ],
+  "PostBuild": [
+    {
+      "Enabled": true,
+      "Name": "ActPrepare",
+      "Caption": "Prepare data",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var odir          = $(SolutionDir)bin]\r\n#[var netStamp      = net$(TargetFrameworkVersion.Replace('.', '').Replace('v', ''))]\r\n#[var netVerString  = $(TargetFrameworkVersion)]\r\n#[var msbuildver    = v$(MSBuildToolsVersion)]\r\n\r\n#[IO delete.directory(\"$(odir)\", true)]\r\n#[IO copy.directory(\"\", \"$(odir)\", true)]",
+        "Command__": [
+          "#[var odir          = $(SolutionDir)bin]",
+          "#[var netStamp      = net$(TargetFrameworkVersion.Replace('.', '').Replace('v', ''))]",
+          "#[var netVerString  = $(TargetFrameworkVersion)]",
+          "#[var msbuildver    = v$(MSBuildToolsVersion)]",
+          "",
+          "#[IO delete.directory(\"$(odir)\", true)]",
+          "#[IO copy.directory(\"\", \"$(odir)\", true)]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "rnotes",
+      "Caption": "Release_notes.txt",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[File write(\"$(odir)\\Release_notes.txt\"):This assembled from:\n\n* Configuration:   '#[$(Configuration)]'\n* .NET version:     #[var netVerString] (#[var netStamp]);\n* MSBuild Tools:    #[var msbuildver];\n* Label:            #[var flabel];\n* Sha1:             #[var sha1];\n]",
+        "Command__": [
+          "#[File write(\"$(odir)\\Release_notes.txt\"):This assembled from:",
+          "",
+          "* Configuration:   '#[$(Configuration)]'",
+          "* .NET version:     #[var netVerString] (#[var netStamp]);",
+          "* MSBuild Tools:    #[var msbuildver];",
+          "* Label:            #[var flabel];",
+          "* Sha1:             #[var sha1];",
+          "]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "packApp1",
+      "Caption": "Pack App1",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var app1  = ClassLibrary1]\n#[var oApp1 = $(ProjectDir:$(app1))$(OutputPath:$(app1))]\n\n#[IO copy.file(\"$(odir)\\Release_notes.txt\", \"$(oApp1)\", true)]\n#[7z pack.files({ \n            \"$(oApp1)$(app1).dll\", \n            \"$(oApp1)$(app1).pdb\",\n            \"$(oApp1)Release_notes.txt\" }, \"$(odir)\\$(app1)_$(flabel)_[$(netStamp)].7z\", SevenZip, Lzma2, 4)]",
+        "Command__": [
+          "#[var app1  = ClassLibrary1]",
+          "#[var oApp1 = $(ProjectDir:$(app1))$(OutputPath:$(app1))]",
+          "",
+          "#[IO copy.file(\"$(odir)\\Release_notes.txt\", \"$(oApp1)\", true)]",
+          "#[7z pack.files({ ",
+          "            \"$(oApp1)$(app1).dll\", ",
+          "            \"$(oApp1)$(app1).pdb\",",
+          "            \"$(oApp1)Release_notes.txt\" }, \"$(odir)\\$(app1)_$(flabel)_[$(netStamp)].7z\", SevenZip, Lzma2, 4)]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "packApp2",
+      "Caption": "Pack App2",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var app2  = ConsoleApplication1]\n#[var oApp2 = $(ProjectDir:$(app2))$(OutputPath:$(app2))]\n#[var fname = $(odir)\\$(app2)_$(flabel)_[$(netStamp)]];\n\n#[IO copy.file(\"$(odir)\\Release_notes.txt\", \"$(oApp2)\", true)]\n#[7z pack.files({ \n            \"$(oApp2)$(app2).exe\", \n            \"$(oApp2)$(app2).pdb\",\n            \"$(oApp2)Release_notes.txt\" }, \"$(fname).tar\", Tar, Copy, 0)]\n            \n#[7z pack.files({\"$(fname).tar\"}, \"$(fname).tar.xz\", XZ, Lzma2, 4)]\n#[IO delete.files({\"$(fname).tar\"})]",
+        "Command__": [
+          "#[var app2  = ConsoleApplication1]",
+          "#[var oApp2 = $(ProjectDir:$(app2))$(OutputPath:$(app2))]",
+          "#[var fname = $(odir)\\$(app2)_$(flabel)_[$(netStamp)]];",
+          "",
+          "#[IO copy.file(\"$(odir)\\Release_notes.txt\", \"$(oApp2)\", true)]",
+          "#[7z pack.files({ ",
+          "            \"$(oApp2)$(app2).exe\", ",
+          "            \"$(oApp2)$(app2).pdb\",",
+          "            \"$(oApp2)Release_notes.txt\" }, \"$(fname).tar\", Tar, Copy, 0)]",
+          "            ",
+          "#[7z pack.files({\"$(fname).tar\"}, \"$(fname).tar.xz\", XZ, Lzma2, 4)]",
+          "#[IO delete.files({\"$(fname).tar\"})]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "packApp3",
+      "Caption": "Pack App3",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var app2  = Sample2]\n#[var oApp2 = $(ProjectDir:$(app2))$(OutputPath:$(app2))]\n#[var fname = $(odir)\\$(app2)_$(flabel)_[$(netStamp)]];\n\n#[IO copy.file(\"$(odir)\\Release_notes.txt\", \"$(oApp2)\", true)]\n#[7z pack.files({ \n            \"$(oApp2)$(app2).exe\", \n            \"$(oApp2)$(app2).pdb\",\n            \"$(oApp2)Release_notes.txt\" }, \"$(fname).zip\")]",
+        "Command__": [
+          "#[var app2  = Sample2]",
+          "#[var oApp2 = $(ProjectDir:$(app2))$(OutputPath:$(app2))]",
+          "#[var fname = $(odir)\\$(app2)_$(flabel)_[$(netStamp)]];",
+          "",
+          "#[IO copy.file(\"$(odir)\\Release_notes.txt\", \"$(oApp2)\", true)]",
+          "#[7z pack.files({ ",
+          "            \"$(oApp2)$(app2).exe\", ",
+          "            \"$(oApp2)$(app2).pdb\",",
+          "            \"$(oApp2)Release_notes.txt\" }, \"$(fname).zip\")]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActLog",
+      "Caption": "print to stdout",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[\"\n    print to stdout\n\"]\n#[IO writeLine(STDOUT):#[IO get(\"$(odir)\\Release_notes.txt\")]]\n#[IO writeLine(STDOUT): ]",
+        "Command__": [
+          "#[\"",
+          "    print to stdout",
+          "\"]",
+          "#[IO writeLine(STDOUT):#[IO get(\"$(odir)\\Release_notes.txt\")]]",
+          "#[IO writeLine(STDOUT): ]"
+        ]
+      }
+    }
+  ],
+  "CancelBuild": [],
+  "WarningsBuild": [],
+  "ErrorsBuild": [],
+  "OWPBuild": [
+    {
+      "Match": {
+        "$type": "net.r_eg.vsSBE.MatchWords[], vsSolutionBuildEvent",
+        "$values": [
+          {
+            "$type": "net.r_eg.vsSBE.MatchWords, vsSolutionBuildEvent",
+            "Condition": "*Project:*",
+            "Type": "Wildcards"
+          }
+        ]
+      },
+      "Enabled": false,
+      "Name": "Act1",
+      "Caption": "calc lastProject",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var lastProject = $(ProjectName)]",
+        "Command__": [
+          "#[var lastProject = $(ProjectName)]"
+        ]
+      }
+    }
+  ],
+  "Transmitter": [],
+  "CommandEvent": [],
+  "Logging": [],
+  "SlnOpened": [
+    {
+      "Enabled": true,
+      "Name": "Act",
+      "Caption": "",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[\" avoid bug #777 \"]\n$(vsSolutionBuildEvent:ClassLibrary1)\n$(vsSolutionBuildEvent:ClassLibrary2)\n$(vsSolutionBuildEvent:ConsoleApplication1)\n$(vsSolutionBuildEvent:Sample2)",
+        "Command__": [
+          "#[\" avoid bug #777 \"]",
+          "$(vsSolutionBuildEvent:ClassLibrary1)",
+          "$(vsSolutionBuildEvent:ClassLibrary2)",
+          "$(vsSolutionBuildEvent:ConsoleApplication1)",
+          "$(vsSolutionBuildEvent:Sample2)"
+        ]
+      }
+    }
+  ],
+  "SlnClosed": []
+}
