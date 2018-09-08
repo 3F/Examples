@@ -35,8 +35,6 @@ However, it will be the [MIT License (MIT)](https://github.com/3F/Examples/blob/
 Copyright (c) Authors and contributors of each individual example
 ```
 
-A cup of coffee [ [☕](https://3F.github.io/Donation/) ] or some donations for github.com/3F: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://3F.github.io/Donation/) 
-
 ## Format
 
 ### Directory Path

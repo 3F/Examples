@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(DllExportIdent)'=='59F71F14-816E-4267-B34F-AA477559C930'" Label="ClassLibrary1\ClassLibrary1.csproj">
+    <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
+    <DllExportNamespace>ClassLibrary1</DllExportNamespace>
+    <DllExportDDNSCecil>true</DllExportDDNSCecil>
+    <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
+    <DllExportGenExpLib>false</DllExportGenExpLib>
+    <DllExportOurILAsm>false</DllExportOurILAsm>
+    <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
+    <DllExportTimeout>30000</DllExportTimeout>
+    <DllExportPeCheck>2</DllExportPeCheck>
+    <DllExportCfgId>59F71F14-816E-4267-B34F-AA477559C930</DllExportCfgId>
+    <DllExportProjectFile>ClassLibrary1\ClassLibrary1.csproj</DllExportProjectFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(DllExportIdent)'=='8DDF703B-394D-48D5-A2EE-79CD247DB217'" Label="ClassLibrary2\ClassLibrary2.vbproj">
+    <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
+    <DllExportNamespace>ClassLibrary2</DllExportNamespace>
+    <DllExportDDNSCecil>true</DllExportDDNSCecil>
+    <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
+    <DllExportGenExpLib>false</DllExportGenExpLib>
+    <DllExportOurILAsm>false</DllExportOurILAsm>
+    <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
+    <DllExportTimeout>30000</DllExportTimeout>
+    <DllExportPeCheck>2</DllExportPeCheck>
+    <DllExportCfgId>8DDF703B-394D-48D5-A2EE-79CD247DB217</DllExportCfgId>
+    <DllExportProjectFile>ClassLibrary2\ClassLibrary2.vbproj</DllExportProjectFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
+      <HintPath>$(SolutionDir)packages\DllExport.1.6.1\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ImportGroup Label=".NET DllExport">
+    <Import Project="$(SolutionDir)packages\DllExport.1.6.1\tools\net.r_eg.DllExport.targets" Condition="Exists('$(SolutionDir)packages\DllExport.1.6.1\tools\net.r_eg.DllExport.targets')" Label="8337224c9ad9e356" />
+  </ImportGroup>
+  <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
+    <Warning Condition="!Exists('$(SolutionDir)DllExport.bat')" Text="We can't find 'DllExport.bat' in '$(SolutionDir)' - https://github.com/3F/DllExport" />
+    <Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.6.1\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command="cd &quot;$(SolutionDir)&quot; &amp; DllExport.bat  -action Restore" />
+  </Target>
+  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
+    <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
+  </Target>
+</Project>
