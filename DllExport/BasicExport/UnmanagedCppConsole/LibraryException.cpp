@@ -7,7 +7,7 @@
 
 namespace examples::dllexport::basicExport
 {
-    DWORD LibraryException::getError()
+    DWORD LibraryException::getError() const
     {
         return error;
     }

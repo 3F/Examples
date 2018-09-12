@@ -6,23 +6,20 @@
 
 namespace examples::dllexport::basicExport
 {
-    class LibraryException: public std::exception
+    class StdDevTool
     {
     public:
 
-        explicit LibraryException()
-            : error(GetLastError()), sysMsg(NULL) { }
+        COORD getCursor();
+        void setCursor(SHORT x = -1, SHORT y = -1);
 
-        virtual ~LibraryException();
+        void write(const TCHAR* str, SHORT x = -1, SHORT y = -1);
 
-        DWORD getError() const;
-
-        virtual const char* what() const;
+        explicit StdDevTool(DWORD device = STD_OUTPUT_HANDLE);
+        virtual ~StdDevTool();
 
     private:
 
-        DWORD error;
-        LPSTR sysMsg;
-
+        HANDLE hstd;
     };
 }
