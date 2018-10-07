@@ -14,7 +14,7 @@ And complements the old :: **.[sandbox](https://github.com/3F/sandbox).** ::
 
 ## Mission
 
-Through complete examples, this repository should provide more related support of various using of some solutions and [public projects](https://github.com/3F), or more.
+Through complete examples, this repository should provide more related support of various using of some solutions and [public projects](https://github.com/3F?tab=repositories), or more.
 
 ## Why separate repository?
 
@@ -98,6 +98,40 @@ But, again, you can optionaly also specify your custom license and copyright for
     * The **Readme.md** name is recomended because of support the [markdown syntax](https://help.github.com/articles/basic-writing-and-formatting-syntax/) inside. 
 3. License file is optional if you want to use our default license.
 4. Use [PR (pull requests)](https://help.github.com/articles/creating-a-pull-request/) to push your example on [https://github.com/3F/Examples](https://github.com/3F/Examples).
+
+## To download only specific example
+
+* To download all examples: https://github.com/3F/Examples/archive/master.zip
+* To clone repository: `git clone https://github.com/3F/Examples.git`
+
+**But,** if you need only one, try for `svn export`, or `git` + `--depth=1` + `sparseCheckout` filter, and so on.
+
+Or **ghdir** scripts:
+
+* **[ghdir](https://github.com/3F/sandbox/tree/master/shell/ghdir)** For Linux & Windows: https://github.com/3F/sandbox/tree/master/shell/ghdir
+
+```
+ghdir {url_to_directory} [{optional_destination_path}]
+```
+
+Sample for [DllExport/BasicExport](https://github.com/3F/Examples/tree/master/DllExport/BasicExport):
+
+```bat
+ghdir https://github.com/3F/Examples/tree/master/DllExport/BasicExport
+```
+
+Receives only this:
+
+```
+└───Examples
+    └───DllExport
+        └───BasicExport
+            ├───ClassLibrary1
+            │   └───Properties
+            ├───ClassLibrary2
+            │   └───My Project
+            └───UnmanagedCppConsole
+```
 
 ## Ask a question or discuss this
 

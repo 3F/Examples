@@ -1,12 +1,14 @@
+:: vsSBE | vsSolutionBuildEvent | SBE-Scripts | CI.MSBuild ::
+
 List of available demo projects as example of basic work, features and similar.
 
-For work with MSBuild Tool or for work **without** Visual Studio you have a [few ways](http://vssbe.r-eg.net/doc/Features/Solution-wide/#how-about-msbuild-tool-or-how-to-work-without-visual-studio).
+You have a [few ways](https://vssbe.r-eg.net/doc/Features/Solution-wide/#how-about-msbuild-tool-or-how-to-work-without-visual-studio) for work with MSBuild Tools or work **without** Visual Studio. The [CI.MSBuild](https://vssbe.r-eg.net/doc/CI/CI.MSBuild/) component is one of them.
 
-And if your choice the [CI.MSBuild](http://vssbe.r-eg.net/doc/CI/CI.MSBuild/) features you also should select how it will be automatically distributed on another machines (where any of our program is not installed at all).
+[GetNuTool](https://github.com/3F/GetNuTool) (recommended), or NuGet clients, can easily help with distributing engine and its scripts on other machines where this tools are not installed at all.
 
-The most easy variant it is the non-binary [GetNuTool](https://github.com/3F/GetNuTool) ~8kb. However, you can also use standard NuGet clients and any other tools.
+This repo illustrates most popular cases and scripts.
 
-You can read about this:
+You can read more about this tool, here:
 
-* Here: https://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/
-* Or here: http://vssbe.r-eg.net
+* https://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/
+* Or here: https://vssbe.r-eg.net
