@@ -121,14 +121,16 @@ Find output binaries in `.\bin` folder per architecture (x86 & x64) and configur
 * Debug this at runtime (press F5) to learn code in details.
     * *Please note: this example also provides own **.vcxproj.user** file just to configure something for your environment. Because, seems, this may cause misunderstanding with debugging by default for some users. Override this in `Properties` - `Debugging` if you know what you do.*
 
-Try also to watch **[this screencast](https://www.youtube.com/watch?v=9Hyg3_WE9Ks)** if you don't understand something. 
+Try also to watch **[this screencast](https://www.youtube.com/watch?v=9Hyg3_WE9Ks)** if you don't understand something.
+
+If you need complex types, **[this screencast](https://www.youtube.com/watch?v=QXMj9-8XJnY)**.
 
 ## Questions and errors
 
 Ask here: https://github.com/3F/Examples/issues/new
 
 
-## Feel free
+## Credits
 
 ```
 // This example has been prepared specially for https://github.com/3F/Examples
@@ -136,7 +138,5 @@ Ask here: https://github.com/3F/Examples/issues/new
 // Distributed under the MIT License
 ```
 
-A cup of coffee [ [☕](https://3F.github.io/Donation/) ] or some donations: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://3F.github.io/Donation/) 
-
-
+[ [☕ A cup of coffee for me](https://3F.github.com/Donation/) ]
 
