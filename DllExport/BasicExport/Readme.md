@@ -132,7 +132,7 @@ Ask here: https://github.com/3F/Examples/issues/new
 
 ```
 // This example has been prepared specially for https://github.com/3F/Examples
-// Copyright (c) 2018  Denis Kuzmin < entry.reg@gmail.com > :: github.com/3F
+// Copyright (c) 2018  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
 // Distributed under the MIT License
 ```
 
