@@ -189,5 +189,5 @@ Ask here: https://github.com/3F/Examples/issues/new
 // Distributed under the MIT License
 ```
 
-[ [☕ A cup of coffee for me](https://3F.github.com/Donation/) ]
+[ [☕ ](https://3F.github.io/Donation/) ]
 
