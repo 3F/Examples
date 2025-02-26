@@ -29,9 +29,9 @@ double x = vb.superPow(2, 3);
 ...
 ```
 
-*And `DotNetCoreLibrary3.dll` is your compiled .NET Core based project (netstandard2; C#)*
+*+`DotNetCoreLibrary3.dll` and `ExtDotNetCoreLibrary4.dll` are your compiled .NET Core based projects (net9.0;net8.0;netstandard2.1;netstandard2.0; C#)*
 
-Console will show you something like:
+Run `build_and_run.cmd` and console should show something like:
 
 ```bash
 .NET ClassLibrary1.dll (netfx; C#) is ready for requests:               #                   \
@@ -156,18 +156,24 @@ C++ Class wrapper of .NET ClassLibrary2.dll (netfx; visual basic) is ready:     
         (45, 24.781, 27.0) == 5.432043e+00                                                  /
         (46, 24.781, 27.0) == 8.358491e+00
         ...
+
+ExtDotNetCoreLibrary4.dll:
+
+  .NET 9.0 -> AmazingCos(147, 32.412, 14) == -6.827972e+00
+  .NET 8.0 -> AmazingCos(231, 8, 62.308, 15) == -1.984088e+00
+  .NET Standard 2.1 -> AmazingCos(904, 9, 4.201, 16) == 3.091151e+00
 ```
 
 Find output binaries in `.\bin` folder per architecture (x86 & x64) and configuration (Debug & Release).
 
-## Additional Requirements
+## Requirements
 
-* You need C++ compiler compatible with **C++17** standard.
+* C++ compiler compatible with **C++17** standard.
     * MSVC: **/std:c++17**
 
 ## Steps
 
-* Open *BasicExport.sln* in Visual Studio  *( VS2019 is recommended ).*
+* Open *BasicExport.sln* in Visual Studio  *( VS2022 recommended ).*
 * And Navigate to *UnmanagedCppConsole* project.
 * Debug this at runtime (press F5) to learn code in details.
     * *Please note: this example also provides own **.vcxproj.user** file just to configure something for your environment. Because, seems, this may cause misunderstanding with debugging by default for some users. Override this in `Properties` - `Debugging` if you know what you do.*
@@ -185,7 +191,7 @@ Ask here: https://github.com/3F/Examples/issues/new
 
 ```
 // This example has been prepared specially for https://github.com/3F/Examples
-// Copyright (c) 2018,2020  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
+// Copyright (c) 2018-2025  Denis Kuzmin <x-3F@outlook.com> github/3F
 // Distributed under the MIT License
 ```
 

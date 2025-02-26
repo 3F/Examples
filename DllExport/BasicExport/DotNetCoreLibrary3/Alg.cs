@@ -3,6 +3,7 @@
 // Distributed under the MIT License
 
 using System;
+using com.github._3F.DllExport;
 
 namespace DotNetCoreLibrary3
 {

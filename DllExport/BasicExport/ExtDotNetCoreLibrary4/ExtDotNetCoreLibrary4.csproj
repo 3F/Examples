@@ -1,35 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>ClassLibrary2</RootNamespace>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net9.0;net8.0;netstandard2.1</TargetFrameworks>
     <Platforms>x64;x86</Platforms>
     <LangVersion>latest</LangVersion>
-    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\$(TargetFramework)\</OutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <DllExportIdent>8DDF703B-394D-48D5-A2EE-79CD247DB217</DllExportIdent>
+    <DllExportIdent>65D268EE-0B35-40C6-9D7C-0232BA10B163</DllExportIdent>
     <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
-    <DllExportNamespace>ClassLibrary2</DllExportNamespace>
+    <DllExportNamespace>com.github._3F.DllExport</DllExportNamespace>
     <DllExportDDNSCecil>true</DllExportDDNSCecil>
     <DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
     <DllExportPlatform>Auto</DllExportPlatform>
+    <DllExportImageBase>0x8000000</DllExportImageBase>
+    <DllExportImageBaseStep>0x400000</DllExportImageBaseStep>
     <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
     <DllExportGenExpLib>false</DllExportGenExpLib>
-    <DllExportOurILAsm>false</DllExportOurILAsm>
-    <DllExportSysObjRebase>false</DllExportSysObjRebase>
+    <DllExportOurILAsm>true</DllExportOurILAsm>
+    <DllExportSysObjRebase>true</DllExportSysObjRebase>
     <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
     <DllExportTimeout>30000</DllExportTimeout>
     <DllExportPeCheck>6</DllExportPeCheck>
-    <DllExportPatches>3</DllExportPatches>
-    <DllExportRefreshObj>true</DllExportRefreshObj>
+    <DllExportPatches>0</DllExportPatches>
+    <DllExportRefreshObj>false</DllExportRefreshObj>
     <DllExportILAsmExternAsm />
-    <DllExportILAsmTypeRef />
-    <DllExportTypeRefOptions>0</DllExportTypeRefOptions>
+    <DllExportILAsmTypeRef>System.Runtime.CompilerServices.DefaultInterpolatedStringHandler,,False,False,True;</DllExportILAsmTypeRef>
+    <DllExportTypeRefOptions>1</DllExportTypeRefOptions>
     <DllExportRefPackages />
     <DllExportPreProcType>0</DllExportPreProcType>
     <DllExportPostProcType>0</DllExportPostProcType>
     <DllExportDir>$(MSBuildProjectDirectory)\..\</DllExportDir>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\DotNetCoreLibrary3\Alg.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DllExport">
       <Version>1.8.0</Version>

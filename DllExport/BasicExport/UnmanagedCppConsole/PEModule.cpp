@@ -10,7 +10,7 @@ namespace examples::dllexport::basicExport
 {
     PEModule::PEModule(const TCHAR* pemodule)
     {
-        lnk = LoadLibraryEx(pemodule, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+        lnk = LoadLibraryEx(pemodule, NULL, 0);
 
         if(lnk == NULL) {
             throw LibraryException();
